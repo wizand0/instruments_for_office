@@ -5,6 +5,10 @@ from datetime import datetime
 # Получаем список фотографий из папки originals
 # Папка должна лежать рядом с этим скриптом
 directory = 'originals'
+start_time = datetime.now()
+count_of_files = 0
+files_size = 0
+count_of_mistakes = 0
 z = "0000"
 g = "00"
 target_dir = f'modified/{z}/{g}'
@@ -16,8 +20,9 @@ for el in files:
     tmp_str = el.lower()
     files_temp.append(tmp_str)
 
-# Выбираем только JPG
-files_jpg = filter(lambda file: file.endswith('.jpg'), files)
+# Выбираем только JPG; У меня в облакене только jpg но и видео и jpeg, png
+# files_jpg = filter(lambda file: file.endswith('.jpg'), files)
+files_jpg = files
 os.chdir('originals/')
 # Перебираем каждый файл из списка фото и вытаскиваем из его EXIF дату фотографирования
 for x in files_jpg:
@@ -61,18 +66,73 @@ for x in files_jpg:
         if "_" in name:
             date_str = name.split("_")[1]
             if len(date_str) == 8:
-                date_if_none = datetime.strptime(date_str, '%Y%m%d')
-                g = date_if_none.strftime('%m')
-                z = date_if_none.strftime('%Y')
+                if date_str.isdigit():
+                    try:
+                        date_if_none = datetime.strptime(date_str, '%Y%m%d')
+                        g = date_if_none.strftime('%m')
+                        z = date_if_none.strftime('%Y')
+                    except Exception:
+                        print("Ошибка с распознаванием даты")
+                        count_of_mistakes += 1
             else:
                 bool_is_date_in_name == False
-
         elif "-" in name:
             date_str = name.split("-")[1]
+            if_first_phrase_is_year = name.split("-")[0]
+            if_second_phrase_is_month = name.split("-")[1]
+            if_second_phrase_is_year = name.split("-")[1]
             if len(date_str) == 8:
-                date_if_none = datetime.strptime(date_str, '%Y%m%d')
-                g = date_if_none.strftime('%m')
-                z = date_if_none.strftime('%Y')
+                if date_str.isdigit():
+                    try:
+                        date_if_none = datetime.strptime(date_str, '%Y%m%d')
+                        g = date_if_none.strftime('%m')
+                        z = date_if_none.strftime('%Y')
+                    except Exception:
+                        print("Ошибка с распознаванием даты")
+                        count_of_mistakes += 1
+            elif len(if_first_phrase_is_year) == 4:
+                if if_first_phrase_is_year.isdigit():
+                    try:
+                        year_of_file = int(if_first_phrase_is_year)
+                        if 2000 < year_of_file < 2100:
+                            z = year_of_file
+                    except Exception:
+                        print("Ошибка с распознаванием даты")
+                        count_of_mistakes += 1
+                    if len(if_second_phrase_is_month) == 2:
+                        if if_second_phrase_is_month.isdigit():
+                            try:
+                                month_of_file = int(if_second_phrase_is_month)
+                                if 0 < month_of_file < 13:
+                                    g = month_of_file
+                            except Exception:
+                                print("Ошибка с распознаванием даты")
+                                count_of_mistakes += 1
+            elif len(if_second_phrase_is_year) == 4:
+                if if_second_phrase_is_year.isdigit():
+                    try:
+                        year_of_file = int(if_second_phrase_is_year)
+                        if 2000 < year_of_file < 2100:
+                            z = year_of_file
+                    except Exception:
+                        print("Ошибка с распознаванием даты")
+                        count_of_mistakes += 1
+                    try:
+                        if_third_phrase_is_month = name.split("-")[2]
+
+                        if len(if_third_phrase_is_month) == 2:
+                            if if_third_phrase_is_month.isdigit():
+                                try:
+                                    month_of_file = int(if_third_phrase_is_month)
+                                    if 0 < month_of_file < 13:
+                                        g = month_of_file
+                                except Exception:
+                                    print("Ошибка с распознаванием даты")
+                                    count_of_mistakes += 1
+                    except Exception:
+                        print("Месяца нет!")
+                        count_of_mistakes += 1
+                        g = "00"
             else:
                 bool_is_date_in_name = False
         else:
@@ -90,5 +150,20 @@ for x in files_jpg:
     except:
         print("Folder already exist or some error")
     # Копируем фотку в папку и удаляем оригинал
-    shutil.copy2(x, dst_fldr)
-    os.remove(x)
+    count_of_files += 1
+    files_size += os.path.getsize(x)
+    try:
+        shutil.copy2(x, dst_fldr)
+        os.remove(x)
+        print(f'{count_of_files}: Файл {x} скопирован')
+    except Exception:
+        print("Ошибка с копированием у файла {x}")
+        count_of_mistakes += 1
+
+
+print(f'Скопировано: {count_of_files} файлов')
+all_size = round((files_size/8)/1024, 2)
+end_time = datetime.now()
+print(f'Общий размер {all_size} Мб')
+print(f'Количество ошибок: {count_of_mistakes}')
+print('Время выполнения скрипта: {}'.format(end_time - start_time))
