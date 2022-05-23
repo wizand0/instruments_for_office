@@ -10,9 +10,9 @@
 фрагмент кода для тегов.<br />
 К сожалению, у меня дата создания файла в названии не совпадала с содержимом тегов<br />
 Учтены основные варианты указания дат в названиях файлов <br />
-***-YearMonthDay-***;<br />
-***_YearMonthDay_***; <br />
-Year-Month-Day-***<br />
+somename-YearMonthDay-somename;<br />
+somename_YearMonthDay_somename; <br />
+Year-Month-Day-somename<br />
 
 Тестовое выполнение:<br />
 Скопировано: 23790 файлов<br />
