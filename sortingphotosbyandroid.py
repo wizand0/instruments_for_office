@@ -104,7 +104,10 @@ for x in files_jpg:
                             try:
                                 month_of_file = int(if_second_phrase_is_month)
                                 if 0 < month_of_file < 13:
-                                    g = month_of_file
+                                    if 0 < month_of_file < 10:
+                                        g = "0" + str(month_of_file)
+                                    else:
+                                        g = month_of_file
                             except Exception:
                                 print("Ошибка с распознаванием даты")
                                 count_of_mistakes += 1
