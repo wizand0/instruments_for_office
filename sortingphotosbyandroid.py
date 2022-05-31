@@ -165,7 +165,7 @@ for x in files_jpg:
 
 
 print(f'Скопировано: {count_of_files} файлов')
-all_size = round((files_size/8)/1024, 2)
+all_size = round(files_size/1024, 2)
 end_time = datetime.now()
 print(f'Общий размер {all_size} Мб')
 print(f'Количество ошибок: {count_of_mistakes}')
