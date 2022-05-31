@@ -151,7 +151,7 @@ for x in files_jpg:
     try:
         os.makedirs(dst_fldr);
     except:
-        print("Folder already exist or some error")
+        print("Целевая папка уже есть. Файл будет перенесен в нее")
     # Копируем фотку в папку и удаляем оригинал
     count_of_files += 1
     files_size += os.path.getsize(x)
